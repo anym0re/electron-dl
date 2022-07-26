@@ -86,12 +86,17 @@ function registerListener(session, options, callback = () => {}) {
 		const errorMessage = options.errorMessage || 'The download of {filename} was interrupted';
 
 		if (options.saveAs) {
-			let saveOptions = options.dialogOptions ? options.dialogOptions : {};
-			if (!saveOptions.defaultPath) {
-				saveOptions.defaultPath = filePath;
-			}
-
-			item.setSaveDialogOptions(saveOptions);
+			const extension = path.extname(filePath);
+			let options = extension ?
+				 {
+					defaultPath: `${filePath}`,
+					filters: [
+						{ name: `${extension}`, extensions: [extension.substring(1, extension.length)] },
+						{ name: 'All Files', extensions: ['*'] }
+					]
+				}
+				: { defaultPath: `${filePath}` }
+			item.setSaveDialogOptions(options);
 		} else {
 			item.setSavePath(filePath);
 		}
